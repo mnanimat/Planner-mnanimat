@@ -98,7 +98,7 @@ fun MeiDashboardScreen(viewModel: AppViewModel, onNavigateToTab: (Int) -> Unit) 
                         text = when (financeMode) {
                             "Só Pessoal" -> "Financeiro Pessoal 🏦"
                             "Só MEI", "Só PJ" -> "Empresa MEI / PJ 💼"
-                            else -> "Dinheiro Pro 💼"
+                            else -> "Dinheiro 💼"
                         },
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold

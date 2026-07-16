@@ -75,7 +75,7 @@ data class Essay(
 @Entity(tableName = "ritvida_hours")
 data class RitVidaHour(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val functionName: String, // Coordenação, Modelador 3D, Estudante, Administrativo
+    val functionName: String, // Trabalho, Saúde, Estudante, Administrativo
     val hours: Float,
     val dateString: String // yyyy-MM-dd
 )
@@ -146,7 +146,7 @@ data class MeiConfig(
     val monthlyMeiRevenueGoal: Float = 6750f
 )
 
-// --- Planner @mnanimat: Conta do Usuário e Configurações ---
+// --- Planner MNAnimat: Conta do Usuário e Configurações ---
 @Entity(tableName = "user_account")
 data class UserAccount(
     @PrimaryKey val id: Int = 1,
@@ -191,7 +191,7 @@ data class VisualTask(
     val endTime: String,         // HH:mm
     val startHour: Int = 9,      // 0 to 23
     val durationHours: Int = 1,  // 1 to 24
-    val function: String,        // e.g. "Coordenação", "Modelador 3D"
+    val function: String,        // e.g. "Trabalho", "Saúde"
     val tag: String,             // Option to set tag
     val checklistRaw: String = "" // "item1:false|item2:true"
 )

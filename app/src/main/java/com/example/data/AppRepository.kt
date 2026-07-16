@@ -252,8 +252,8 @@ class AppRepository(private val db: AppDatabase) {
         if (hoursCount == 0) {
             listOf(
                 // Week 29
-                RitVidaHour(functionName = "Coordenação", hours = 15.5f, dateString = "2026-07-14"),
-                RitVidaHour(functionName = "Modelador 3D", hours = 28.0f, dateString = "2026-07-14"),
+                RitVidaHour(functionName = "Trabalho", hours = 15.5f, dateString = "2026-07-14"),
+                RitVidaHour(functionName = "Saúde", hours = 28.0f, dateString = "2026-07-14"),
                 RitVidaHour(functionName = "Estudante", hours = 22.5f, dateString = "2026-07-14"),
                 RitVidaHour(functionName = "Administrativo", hours = 10.0f, dateString = "2026-07-14"),
                 // Week 28
@@ -343,7 +343,7 @@ class AppRepository(private val db: AppDatabase) {
                     endTime = "17:00",
                     startHour = 14,
                     durationHours = 3,
-                    function = "Modelador 3D",
+                    function = "Saúde",
                     tag = "Plataforma Educacional",
                     checklistRaw = "Rascunhar wireframes da trilha:true|Implementar Canvas com Jetpack Compose:true|Testar animação de transição:false"
                 ),
@@ -355,7 +355,7 @@ class AppRepository(private val db: AppDatabase) {
                     endTime = "12:00",
                     startHour = 10,
                     durationHours = 2,
-                    function = "Coordenação",
+                    function = "Trabalho",
                     tag = "Plataforma Educacional",
                     checklistRaw = "Configurar chaves de API local:true|Desenvolver prompts de auxílio educacional:true|Implementar stream de respostas:true"
                 ),

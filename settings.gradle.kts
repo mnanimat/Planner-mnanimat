@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Planner @mnanimat"
+rootProject.name = "Planner MNAnimat"
 
 include(":app")

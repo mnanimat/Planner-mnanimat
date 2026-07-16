@@ -231,12 +231,17 @@ fun HourDistributionBars(
     }
     
     val totalHours = grouped.values.sum().coerceAtLeast(1f)
-    val items = listOf("Coordenação", "Modelador 3D", "Estudante", "Administrativo")
+    val items = remember(hoursList) {
+        val base = listOf("Estudante", "Trabalho", "Saúde", "Administrativo")
+        val inList = hoursList.map { it.functionName }.distinct().filter { it.isNotBlank() }
+        (base + inList).distinct()
+    }
     val colors = listOf(
-        Color(0xFFFF7043), // Coral
-        Color(0xFF26A69A), // Teal
-        Color(0xFFAB47BC), // Purple
-        Color(0xFF42A5F5)  // Blue
+        Color(0xFFAB47BC), // Purple (Estudante)
+        Color(0xFFFF7043), // Coral (Trabalho)
+        Color(0xFF26A69A), // Teal (Saúde)
+        Color(0xFF42A5F5), // Blue (Administrativo)
+        Color(0xFF78909C)  // Slate Grey (others)
     )
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {

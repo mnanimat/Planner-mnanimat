@@ -314,6 +314,12 @@ class AppViewModel(application: Application, private val repository: AppReposito
         }
     }
 
+    fun updateHour(hour: RitVidaHour) {
+        viewModelScope.launch {
+            repository.insertHour(hour)
+        }
+    }
+
     // --- MN RitVida: Finanças ---
     val allTransactions: StateFlow<List<RitVidaFinance>> = repository.allTransactions
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -693,6 +699,34 @@ class AppViewModel(application: Application, private val repository: AppReposito
             val current = userAccount.value ?: UserAccount()
             val updated = current.copy(name = name, email = email)
             repository.saveUserAccount(updated)
+        }
+    }
+
+    fun deleteUserAccount() {
+        viewModelScope.launch {
+            repository.deleteUserAccount()
+        }
+    }
+
+    fun logoutUserAccount() {
+        viewModelScope.launch {
+            val current = userAccount.value
+            if (current != null) {
+                val updated = current.copy(termsAccepted = false)
+                repository.saveUserAccount(updated)
+            } else {
+                repository.deleteUserAccount()
+            }
+        }
+    }
+
+    fun loginWithExistingAccount() {
+        viewModelScope.launch {
+            val current = userAccount.value
+            if (current != null) {
+                val updated = current.copy(termsAccepted = true)
+                repository.saveUserAccount(updated)
+            }
         }
     }
 

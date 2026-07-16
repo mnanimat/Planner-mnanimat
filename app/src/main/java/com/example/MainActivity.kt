@@ -159,7 +159,7 @@ fun MainAppShell(viewModel: AppViewModel) {
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                                 ) {
                                     Text(
-                                        text = "@mnanimat",
+                                        text = "MNAnimat",
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -525,6 +525,33 @@ fun MainAppShell(viewModel: AppViewModel) {
                         }
                     }
 
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                    Button(
+                        onClick = {
+                            viewModel.logoutUserAccount()
+                            showProfileDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("logout_reset_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Sair da conta",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
                     if (showLegalDialog) {
                         AlertDialog(
                             onDismissRequest = { showLegalDialog = false },
@@ -551,7 +578,7 @@ fun MainAppShell(viewModel: AppViewModel) {
                                             color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
-                                            text = "O Planner @mnanimat é um ecossistema projetado para gerenciar de forma unificada as esferas de Estudos, Rotinas e Dinheiro de forma estritamente autônoma e offline. Todos os seus dados são gravados localmente na sandbox segura do sistema operacional Android do seu dispositivo.",
+                                            text = "O Planner MNAnimat é um ecossistema projetado para gerenciar de forma unificada as esferas de Estudos, Rotinas e Dinheiro de forma estritamente autônoma e offline. Todos os seus dados são gravados localmente na sandbox segura do sistema operacional Android do seu dispositivo.",
                                             fontSize = 11.sp,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
@@ -576,7 +603,7 @@ fun MainAppShell(viewModel: AppViewModel) {
                                             color = MaterialTheme.colorScheme.secondary
                                         )
                                         Text(
-                                            text = "Copyright (c) 2026 @mnanimat\n\n" +
+                                            text = "Copyright (c) 2026 MNAnimat\n\n" +
                                                     "É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software, para usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender cópias do software, sem restrições, sujeito à condição de que o aviso de copyright acima e este aviso de permissão sejam incluídos em todas as cópias ou partes substanciais do Software.\n\n" +
                                                     "O SOFTWARE É FORNECIDO 'COMO ESTÁ', SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA.",
                                             fontSize = 11.sp,

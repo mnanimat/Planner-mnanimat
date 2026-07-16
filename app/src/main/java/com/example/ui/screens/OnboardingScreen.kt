@@ -33,6 +33,7 @@ import com.example.ui.AppViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(viewModel: AppViewModel) {
+    val existingAccount by viewModel.userAccount.collectAsState()
     var step by remember { mutableIntStateOf(1) } // 1: Terms, 2: Registration
     
     var acceptTerms by remember { mutableStateOf(false) }
@@ -66,7 +67,7 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
-                        text = "Planner @mnanimat",
+                        text = "Planner MNAnimat",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -108,7 +109,7 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                             )
                             
                             Text(
-                                text = "Bem-vindo ao Planner @mnanimat! Para garantir conformidade com as diretrizes da Google Play Store, a legislação brasileira (LGPD) e as regulamentações internacionais (GDPR), por favor leia e aceite nossos termos integrados.",
+                                text = "Bem-vindo ao Planner MNAnimat! Para garantir conformidade com as diretrizes da Google Play Store, a legislação brasileira (LGPD) e as regulamentações internacionais (GDPR), por favor leia e aceite nossos termos integrados.",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -120,7 +121,7 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                                 Text(text = "1. Termos de Uso (Uso Local)", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                             }
                             Text(
-                                text = "O Planner @mnanimat é um ecossistema projetado para gerenciar de forma unificada as esferas de Estudos, Rotinas e Dinheiro. O aplicativo funciona de forma estritamente autônoma e offline. Todos os seus dados são gravados localmente na sandbox segura do sistema operacional Android do seu dispositivo, utilizando o banco de dados interno SQLite (Room). Você é inteiramente responsável pela guarda e proteção do seu aparelho e das credenciais locais definidas.",
+                                text = "O Planner MNAnimat é um ecossistema projetado para gerenciar de forma unificada as esferas de Estudos, Rotinas e Dinheiro. O aplicativo funciona de forma estritamente autônoma e offline. Todos os seus dados são gravados localmente na sandbox segura do sistema operacional Android do seu dispositivo, utilizando o banco de dados interno SQLite (Room). Você é inteiramente responsável pela guarda e proteção do seu aparelho e das credenciais locais definidas.",
                                 fontSize = 11.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -155,7 +156,7 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                             }
                             Text(
                                 text = "Este aplicativo é distribuído sob os termos da Licença MIT:\n\n" +
-                                        "Copyright (c) 2026 @mnanimat\n\n" +
+                                        "Copyright (c) 2026 MNAnimat\n\n" +
                                         "É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e arquivos de documentação associados, para lidar com o software sem restrições, incluindo, sem limitação, os direitos de usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender cópias do software, sujeito às seguintes condições:\n\n" +
                                         "O aviso de copyright acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.\n\n" +
                                         "O SOFTWARE É FORNECIDO 'COMO ESTÁ', SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO, ADEQUAÇÃO A UM DETERMINADO FIM E NÃO INFRAÇÃO. EM NENHUM CASO OS AUTORES OU DETENTORES DE DIREITOS AUTORAIS SERÃO RESPONSÁVEIS POR QUALQUER REIVINDICAÇÃO, DANOS OU OUTRA RESPONSABILIDADE, SEJA IN COORDENAÇÃO DE CONTRATO, ILÍCITO OU DE OUTRA FORMA, DECORRENTE DE, FORA DE OU EM CONEXÃO COM O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES NO SOFTWARE.",
@@ -294,7 +295,7 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                     )
                     
                     Text(
-                        text = "Crie seu perfil para gerenciar o Planner @mnanimat com segurança local na memória do celular.",
+                        text = "Crie seu perfil para gerenciar o Planner MNAnimat com segurança local na memória do celular.",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -379,7 +380,16 @@ fun OnboardingScreen(viewModel: AppViewModel) {
                                     formError = "Insira um endereço de e-mail válido!"
                                 } else {
                                     formError = ""
-                                    step = 3
+                                    val currentAcc = existingAccount
+                                    if (currentAcc != null &&
+                                        currentAcc.name.trim().equals(name.trim(), ignoreCase = true) &&
+                                        currentAcc.email.trim().equals(email.trim(), ignoreCase = true) &&
+                                        currentAcc.passwordHash == password
+                                    ) {
+                                        viewModel.loginWithExistingAccount()
+                                    } else {
+                                        step = 3
+                                    }
                                 }
                             },
                             modifier = Modifier

@@ -43,6 +43,8 @@ import com.example.ui.AppViewModel
 import com.example.ui.components.FinanceLineChart
 import com.example.ui.components.HourDistributionBars
 import com.example.ui.components.WeeklyStudyHoursChart
+import androidx.compose.ui.platform.LocalContext
+import com.example.ui.components.PdfReport
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +75,20 @@ fun RitVidaOverviewScreen(
     var functionNameInput by remember { mutableStateOf("Estudante") }
     var hoursInputText by remember { mutableStateOf("") }
     var dateInputText by remember { mutableStateOf("2026-07-15") }
+
+    // Edit hours dialog state
+    var editingHourItem by remember { mutableStateOf<RitVidaHour?>(null) }
+    var editFunctionNameInput by remember { mutableStateOf("") }
+    var editHoursInputText by remember { mutableStateOf("") }
+    var editDateInputText by remember { mutableStateOf("") }
+
+    LaunchedEffect(editingHourItem) {
+        editingHourItem?.let { item ->
+            editFunctionNameInput = item.functionName
+            editHoursInputText = item.hours.toString()
+            editDateInputText = item.dateString
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -119,12 +135,46 @@ fun RitVidaOverviewScreen(
                             .padding(20.dp)
                     ) {
                         Column {
-                            Text(
-                                text = "Painel Integrado 🌀",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Painel Integrado 🌀",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                val context = LocalContext.current
+                                val customCronogramaList by viewModel.allCustomCronogramaItems.collectAsState()
+                                val subjectsList by viewModel.allSubjects.collectAsState()
+
+                                Button(
+                                    onClick = {
+                                        PdfReport.generateAndSharePdf(
+                                            context = context,
+                                            hoursList = hoursList,
+                                            subjectsList = subjectsList,
+                                            customCronogramaList = customCronogramaList
+                                        )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PictureAsPdf,
+                                        contentDescription = "PDF",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Gerar PDF", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Controle o equilíbrio de tempo, acompanhe sua saúde financeira e gerencie projetos ativos de forma 100% privada e local.",
@@ -355,13 +405,23 @@ fun RitVidaOverviewScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                            IconButton(onClick = { viewModel.deleteHour(item.id) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Deletar",
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(onClick = { editingHourItem = item }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                IconButton(onClick = { viewModel.deleteHour(item.id) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Deletar",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -496,7 +556,7 @@ fun RitVidaOverviewScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val suggestions = listOf("Estudante", "Modelador 3D", "Coordenação", "Administrativo")
+                        val suggestions = listOf("Estudante", "Saúde", "Trabalho", "Administrativo")
                         suggestions.forEach { suggestion ->
                             FilterChip(
                                 selected = functionNameInput == suggestion,
@@ -540,6 +600,86 @@ fun RitVidaOverviewScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showAddHourDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (editingHourItem != null) {
+        AlertDialog(
+            onDismissRequest = { editingHourItem = null },
+            title = { Text("Editar Registro de Horas") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = editFunctionNameInput,
+                        onValueChange = { editFunctionNameInput = it },
+                        label = { Text("Função/Atividade") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    Text(
+                        text = "Sugestões Rápidas:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val suggestions = listOf("Estudante", "Saúde", "Trabalho", "Administrativo")
+                        suggestions.forEach { suggestion ->
+                            FilterChip(
+                                selected = editFunctionNameInput == suggestion,
+                                onClick = { editFunctionNameInput = suggestion },
+                                label = { Text(suggestion, fontSize = 11.sp) }
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = editHoursInputText,
+                        onValueChange = { editHoursInputText = it },
+                        label = { Text("Quantidade de Horas") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = editDateInputText,
+                        onValueChange = { editDateInputText = it },
+                        label = { Text("Data (aaaa-mm-dd)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val hoursValue = editHoursInputText.toFloatOrNull() ?: 0f
+                        val currentItem = editingHourItem
+                        if (currentItem != null && editFunctionNameInput.isNotBlank() && hoursValue > 0) {
+                            viewModel.updateHour(currentItem.copy(
+                                functionName = editFunctionNameInput,
+                                hours = hoursValue,
+                                dateString = editDateInputText
+                            ))
+                            editingHourItem = null
+                        }
+                    }
+                ) {
+                    Text("Salvar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingHourItem = null }) {
                     Text("Cancelar")
                 }
             }
@@ -2004,8 +2144,8 @@ fun RitVidaVisualScreen(viewModel: AppViewModel) {
     var endTime by remember { mutableStateOf("10:00") }
     var startHour by remember { mutableIntStateOf(9) }
     var durationHours by remember { mutableIntStateOf(1) }
-    var functionVal by remember { mutableStateOf("Estudante") } // "Coordenação", "Modelador 3D", "Estudante", "Administrativo"
-    val functionOptions = listOf("Estudante", "Coordenação", "Modelador 3D", "Administrativo")
+    var functionVal by remember { mutableStateOf("Estudante") } // "Trabalho", "Saúde", "Estudante", "Administrativo"
+    val functionOptions = listOf("Estudante", "Trabalho", "Saúde", "Administrativo")
     var tagVal by remember { mutableStateOf("Estudos") } // Tag
     val checklistItemsList = remember { mutableStateListOf<Pair<String, Boolean>>() }
     var newChecklistItemText by remember { mutableStateOf("") }
